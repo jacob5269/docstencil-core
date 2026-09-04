@@ -3,6 +3,7 @@ package com.docstencil.core.render
 import com.docstencil.core.error.TemplaterException
 import com.docstencil.core.modules.VariableArityFunction
 import com.docstencil.core.scanner.model.TemplateToken
+import com.docstencil.core.scanner.model.TemplateTokenType
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.*
 import kotlin.reflect.*
@@ -139,7 +140,7 @@ class NativeObjectHelper {
      * - Java bean getters (getName, getPropertyName)
      */
     fun getProperty(obj: Any, name: TemplateToken): Any? {
-        val propertyName = name.lexeme
+        val propertyName = if (name.type == TemplateTokenType.STRING) name.literal as String else name.lexeme
         val kClass = obj::class
         val cacheKey = kClass to propertyName
 
@@ -188,7 +189,7 @@ class NativeObjectHelper {
      * - Java bean setters (setName, setPropertyName)
      */
     fun setProperty(obj: Any, name: TemplateToken, value: Any?) {
-        val propertyName = name.lexeme
+        val propertyName = if (name.type == TemplateTokenType.STRING) name.literal as String else name.lexeme
         val kClass = obj::class
         val cacheKey = kClass to propertyName
 

@@ -316,11 +316,11 @@ class TemplateParser {
                     expr = finishCall(expr)
                 } else if (match(TemplateTokenType.DOT)) {
                     val name =
-                        consume(TemplateTokenType.IDENTIFIER, "Expect property name after '.'.")
+                        consumePropertyName("Expect property name after '.'.")
                     expr = GetExpr(expr, name)
                 } else if (match(TemplateTokenType.DOT_QUESTION)) {
                     val name =
-                        consume(TemplateTokenType.IDENTIFIER, "Expect property name after '.?'.")
+                        consumePropertyName("Expect property name after '.?'.")
                     expr = OptionalGetExpr(expr, name)
                 } else {
                     break
@@ -526,6 +526,13 @@ class TemplateParser {
         ): TemplateToken {
             if (check(expectedTokenType)) {
                 return advance()
+            }
+            throw TemplaterException.ParseError(errorMessage, peek())
+        }
+
+        private fun consumePropertyName(errorMessage: String): TemplateToken {
+            if (match(TemplateTokenType.IDENTIFIER, TemplateTokenType.STRING)) {
+                return previous()
             }
             throw TemplaterException.ParseError(errorMessage, peek())
         }

@@ -2,6 +2,7 @@ package com.docstencil.core.render
 
 import com.docstencil.core.error.TemplaterException
 import com.docstencil.core.scanner.model.TemplateToken
+import com.docstencil.core.scanner.model.TemplateTokenType
 
 /**
  * Helper class for property access that supports both native objects and maps.
@@ -29,8 +30,8 @@ class PropertyAccessHelper {
     }
 
     fun getProperty(obj: Any, name: TemplateToken): Any? {
-        val propertyName = name.lexeme
-
+        val propertyName = if (name.type == TemplateTokenType.STRING) name.literal as String else name.lexeme
+        
         try {
             return nativeObjectHelper.getProperty(obj, name)
         } catch (_: TemplaterException.RuntimeError) {
@@ -57,7 +58,7 @@ class PropertyAccessHelper {
     }
 
     fun setProperty(obj: Any, name: TemplateToken, value: Any?) {
-        val propertyName = name.lexeme
+        val propertyName = if (name.type == TemplateTokenType.STRING) name.literal as String else name.lexeme
 
         try {
             nativeObjectHelper.setProperty(obj, name, value)
